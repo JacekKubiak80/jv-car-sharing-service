@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-
 import com.example.demo.model.Rental;
 import org.springframework.stereotype.Service;
 

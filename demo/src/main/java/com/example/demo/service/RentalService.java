@@ -1,9 +1,7 @@
 package com.example.demo.service;
 
-
 import com.example.demo.dto.RentalResponseDto;
 import com.example.demo.model.Rental;
-
 import java.util.List;
 
 public interface RentalService {

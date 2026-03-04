@@ -1,16 +1,13 @@
 package com.example.demo.service;
 
-
 import com.example.demo.dto.RentalResponseDto;
 import com.example.demo.mapper.RentalMapper;
 import com.example.demo.model.Rental;
 import com.example.demo.repository.RentalRepository;
-import com.example.demo.service.RentalService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

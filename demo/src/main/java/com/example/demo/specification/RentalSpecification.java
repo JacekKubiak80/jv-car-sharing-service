@@ -1,11 +1,9 @@
 package com.example.demo.specification;
 
-
 import com.example.demo.model.Rental;
 import com.example.demo.model.User;
-import org.springframework.data.jpa.domain.Specification;
-
 import java.time.LocalDate;
+import org.springframework.data.jpa.domain.Specification;
 
 public class RentalSpecification {
 
@@ -16,7 +14,9 @@ public class RentalSpecification {
 
     public static Specification<Rental> isActive(Boolean active) {
         return (root, query, builder) -> {
-            if (active == null) return null;
+            if (active == null) {
+                return null;
+            }
             return active
                     ? builder.isNull(root.get("actualReturnDate"))
                     : builder.isNotNull(root.get("actualReturnDate"));

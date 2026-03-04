@@ -1,10 +1,8 @@
 package com.example.demo.specification;
 
-
 import com.example.demo.model.Car;
-import org.springframework.data.jpa.domain.Specification;
-
 import java.math.BigDecimal;
+import org.springframework.data.jpa.domain.Specification;
 
 public class CarSpecification {
 

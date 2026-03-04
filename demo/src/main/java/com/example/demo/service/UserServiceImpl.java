@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-
 import com.example.demo.dto.UserRequestDto;
 import com.example.demo.dto.UserResponseDto;
 import com.example.demo.mapper.UserMapper;
@@ -39,7 +38,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updateProfile(String email, @Valid UserRequestDto updatedUserRequestDto) {
+    public UserResponseDto updateProfile(String email,
+                                         @Valid UserRequestDto updatedUserRequestDto) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

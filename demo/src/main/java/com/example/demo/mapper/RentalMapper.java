@@ -8,7 +8,9 @@ import org.mapstruct.Mapper;
 public interface RentalMapper {
 
     default RentalResponseDto toDto(Rental rental) {
-        if (rental == null) return null;
+        if (rental == null) {
+            return null;
+        }
         return RentalResponseDto.builder()
                 .id(rental.getId())
                 .car(CarMapper.INSTANCE.toDto(rental.getCar()))
