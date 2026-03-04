@@ -2,24 +2,24 @@ package com.example.demo.dto;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RentalRequest {
+public class RentalRequestDto {
 
     @NotNull(message = "Car ID cannot be null")
     private Long carId;
 
-    @NotNull(message = "User ID cannot be null")
-    private Long userId;
-
     @NotNull(message = "Return date cannot be null")
-    @FutureOrPresent(message = "Return date must be in the future or today")
+    @FutureOrPresent(message = "Return date must be today or in the future")
     private LocalDate returnDate;
 }

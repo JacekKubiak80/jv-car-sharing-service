@@ -6,13 +6,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DemoApplication {
+public class CarSharingApplication {
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(CarSharingApplication.class, args);
     }
     @PostConstruct
     public void testSecret() {

@@ -1,19 +1,20 @@
 package com.example.demo.dto;
 
-
-import com.example.demo.model.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponse {
+public class UserResponseDto {
 
     private Long id;
     private String email;
     private String firstName;
     private String lastName;
-    private User.Role role;
 }

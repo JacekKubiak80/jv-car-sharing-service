@@ -1,25 +1,20 @@
 package com.example.demo.mapper;
 
-
-import com.example.demo.dto.CarResponse;
+import com.example.demo.dto.CarRequestDto;
+import com.example.demo.dto.CarResponseDto;
 import com.example.demo.model.Car;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
-public class CarMapper {
+@Mapper(componentModel = "spring")
+public interface CarMapper {
 
-    private CarMapper() {}
+    CarMapper INSTANCE = Mappers.getMapper(CarMapper.class);
 
-    public static CarResponse toDto(Car car) {
-        if (car == null) {
-            return null;
-        }
+    CarResponseDto toDto(Car car);
 
-        return CarResponse.builder()
-                .id(car.getId())
-                .brand(car.getBrand())
-                .model(car.getModel())
-                .type(Car.CarType.valueOf(car.getType().name()))
-                .dailyFee(car.getDailyFee())
-                .inventory(car.getInventory())
-                .build();
-    }
+    Car toEntity(CarRequestDto dto);
+
+    void updateEntityFromDto(CarRequestDto dto, @MappingTarget Car entity);
 }

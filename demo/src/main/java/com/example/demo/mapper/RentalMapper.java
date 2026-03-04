@@ -1,25 +1,21 @@
 package com.example.demo.mapper;
 
-
-import com.example.demo.dto.RentalResponse;
+import com.example.demo.dto.RentalResponseDto;
 import com.example.demo.model.Rental;
+import org.mapstruct.Mapper;
 
-public class RentalMapper {
+@Mapper(componentModel = "spring", uses = {CarMapper.class})
+public interface RentalMapper {
 
-    private RentalMapper() {}
-
-    public static RentalResponse toDto(Rental rental) {
-        if (rental == null) {
-            return null;
-        }
-
-        return RentalResponse.builder()
+    default RentalResponseDto toDto(Rental rental) {
+        if (rental == null) return null;
+        return RentalResponseDto.builder()
                 .id(rental.getId())
+                .car(CarMapper.INSTANCE.toDto(rental.getCar()))
                 .rentalDate(rental.getRentalDate())
                 .returnDate(rental.getReturnDate())
                 .actualReturnDate(rental.getActualReturnDate())
-                .carId(rental.getCar().getId())
-                .userId(rental.getUser().getId())
+                .active(rental.getActualReturnDate() == null)
                 .build();
     }
 }

@@ -1,20 +1,23 @@
 package com.example.demo.dto;
 
-import lombok.*;
-
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RentalResponse {
+public class RentalResponseDto {
 
     private Long id;
-    private Long carId;
-    private Long userId;
+    private CarResponseDto car;
     private LocalDate rentalDate;
     private LocalDate returnDate;
     private LocalDate actualReturnDate;
+    private boolean active;
 }

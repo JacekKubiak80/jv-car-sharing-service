@@ -1,14 +1,17 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Rental;
-import com.example.demo.model.User;
+import com.example.demo.dto.RentalResponseDto;
 import com.example.demo.service.RentalService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@Tag(name = "Rental Controller", description = "Operations for managing car rentals")
 @RestController
 @RequestMapping("/rentals")
 @RequiredArgsConstructor
@@ -16,20 +19,24 @@ public class RentalController {
 
     private final RentalService rentalService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Rental createRental(@RequestBody Rental rental) {
-        return rentalService.createRental(rental);
-    }
-
-    @PostMapping("/{id}/return")
-    public Rental returnRental(@PathVariable Long id) {
-        return rentalService.returnRental(id);
-    }
-
+    @Operation(summary = "Get all rentals (MANAGER only)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All rentals retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied for non-manager users")
+    })
+    @PreAuthorize("hasRole('MANAGER')")
     @GetMapping
-    public List<Rental> getRentalsForUser(@RequestBody User user,
-                                          @RequestParam(required = false) Boolean isActive) {
-        return rentalService.getRentalsForUser(user, isActive);
+    public List<RentalResponseDto> getAllRentals() {
+        return rentalService.getAllRentals();
+    }
+
+    @Operation(summary = "Get rental by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rental retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Rental not found")
+    })
+    @GetMapping("/{id}")
+    public RentalResponseDto getRentalById(@PathVariable Long id) {
+        return rentalService.getRentalById(id);
     }
 }

@@ -15,4 +15,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     List<Rental> findByUserAndActualReturnDateIsNull(User user);
 
     List<Rental> findByUserAndActualReturnDateIsNotNull(User user);
+
+    List<Rental> findByUserEmail(String email);
 }

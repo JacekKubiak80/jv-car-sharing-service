@@ -1,24 +1,14 @@
 package com.example.demo.mapper;
 
-
-import com.example.demo.dto.UserResponse;
+import com.example.demo.dto.UserRequestDto;
+import com.example.demo.dto.UserResponseDto;
 import com.example.demo.model.User;
+import org.mapstruct.Mapper;
 
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-    private UserMapper() {}
+    UserResponseDto toDto(User user);
 
-    public static UserResponse toDto(User user) {
-        if (user == null) {
-            return null;
-        }
-
-        return UserResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .role(User.Role.valueOf(user.getRole().name()))
-                .build();
-    }
+    User toEntity(UserRequestDto userRequestDto);
 }
