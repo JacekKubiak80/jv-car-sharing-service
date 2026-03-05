@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>mate.academy</groupId>
-    <artifactId>demo</artifactId>
+    <artifactId>car-sharing</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>demo</name>
     <description>demo</description>
@@ -16,9 +16,7 @@
         <spring.boot.version>3.3.3</spring.boot.version>
         <lombok.version>1.18.28</lombok.version>
         <jjwt.version>0.11.5</jjwt.version>
-        <maven.checkstyle.plugin.configLocation>
-            https://raw.githubusercontent.com/mate-academy/style-guides/master/java/checkstyle.xml
-        </maven.checkstyle.plugin.configLocation>
+        <maven.checkstyle.plugin.configLocation>config/checkstyle/checkstyle.xml</maven.checkstyle.plugin.configLocation>
     </properties>
 
     <parent>
@@ -135,7 +133,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.3.1</version>
                 <configuration>
-                    <configLocation>${maven.checkstyle.plugin.configLocation}</configLocation>
+                    <configLocation>src/main/resources/config/checkstyle/checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
