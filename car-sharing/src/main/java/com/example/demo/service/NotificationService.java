@@ -1,14 +1,16 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Rental;
+import com.example.demo.dto.RentalResponseDto;
 import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationService {
 
-    public void sendRentalCreated(Rental rental) {
+    public void sendRentalCreated(RentalResponseDto rentalDto) {
+        System.out.println("Rental created: " + rentalDto.getId());
     }
 
-    public void sendRentalReturned(Rental rental) {
+    public void sendRentalReturned(RentalResponseDto rentalDto) {
+        System.out.println("Rental returned: " + rentalDto.getId());
     }
 }

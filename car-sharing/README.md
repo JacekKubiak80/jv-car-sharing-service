@@ -3,55 +3,56 @@
 ![Car Sharing Illustration](images/wypozyczalnia-samochodow-osobowych-i-dostawczych.jpg))
 
 ## Project Description
-Car Sharing Service is a web application that allows users to rent cars online. The project was created as part of the **Java Developer** course at **Mate Academy** and demonstrates practical usage of Spring Boot, JPA, Spring Security, JWT, and design patterns.
+Car Sharing Service is a web application that allows users to rent cars online.  
+The project was created as part of the **Java Developer course at Mate Academy** and demonstrates practical usage of **Spring Boot, Spring Data JPA, Spring Security, JWT authentication, and REST API design**.
 
-The application supports:
-- car management (CRUD operations for MANAGER role),
-- user registration and profile management,
-- creating and managing rentals,
-- payment system integration (Stripe simulation),
-- filtering and searching data using JPA specifications.
+The application allows users to browse available cars, create rentals, and manage their profile. Managers can manage the car inventory and view rental data.
+
+The project follows a layered architecture with controllers, services, repositories, DTOs, and mappers.
 
 ---
 
 ## Features
-- **Cars**
-    - Browse available cars
-    - Create, update, and delete cars (MANAGER only)
-    - Filter by brand, type, availability, and daily price
 
-- **Users**
-    - Registration and profile update
-    - Retrieve user information
-    - Roles: `MANAGER` and `CUSTOMER`
+### Cars
+- Browse available cars
+- Filter cars by brand, type, availability, and maximum daily price
+- Create, update, and delete cars (**MANAGER only**)
 
-- **Rentals**
-    - Create and manage rentals
-    - Calculate total price based on rental days
-    - Track active rental status
+### Users
+- User registration
+- Retrieve and update user profile
+- Role-based access control (`MANAGER`, `CUSTOMER`)
 
-- **Payments**
-    - View payments
-    - Payment session simulation
-    - Filter payments by user
+### Rentals
+- Create a rental for a selected car
+- Track rental status (active or completed)
+- Return a rented car
+- Automatic inventory update when renting and returning a car
+- Calculate total rental price based on rental duration
 
-- **Security**
-    - JWT-based authorization
-    - Password hashing with BCrypt
-    - Role-based access restrictions
+### Payments
+- Retrieve payments
+- View payments for a specific user
+- Basic payment flow structure prepared for external payment integration
+
+### Security
+- Authentication with **Spring Security**
+- **JWT-based authorization**
+- Role-based endpoint protection
 
 ---
 
 ## Technologies
 - Java 17
-- Spring Boot 3.3
+- Spring Boot 3
 - Spring Data JPA
-- Spring Security + JWT
+- Spring Security
+- JWT
 - MapStruct
 - MySQL / H2
 - Maven
-- Liquibase
-- Swagger/OpenAPI
+- Swagger / OpenAPI
 
 ---
 

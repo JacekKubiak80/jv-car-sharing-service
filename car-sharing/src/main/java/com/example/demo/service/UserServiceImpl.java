@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto register(@Valid UserRequestDto userRequestDto) {
         User user = userMapper.toEntity(userRequestDto);
+        user.setRole(User.Role.CUSTOMER); // domyślnie CUSTOMER
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
     }
@@ -43,10 +44,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setFirstName(updatedUserRequestDto.getFirstName());
-        user.setLastName(updatedUserRequestDto.getLastName());
-        user.setPassword(updatedUserRequestDto.getPassword());
-
+        userMapper.updateEntityFromDto(updatedUserRequestDto, user);
         User updatedUser = userRepository.save(user);
         return userMapper.toDto(updatedUser);
     }

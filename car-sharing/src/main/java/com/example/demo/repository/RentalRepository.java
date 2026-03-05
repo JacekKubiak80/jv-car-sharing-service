@@ -1,18 +1,24 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Rental;
-import com.example.demo.model.User;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface RentalRepository extends JpaRepository<Rental, Long> {
+
     List<Rental> findByUserId(Long userId);
 
-    List<Rental> findByUser(User user);
+    List<Rental> findByUserIdAndActualReturnDateIsNull(Long userId);
 
-    List<Rental> findByUserAndActualReturnDateIsNull(User user);
-
-    List<Rental> findByUserAndActualReturnDateIsNotNull(User user);
+    List<Rental> findByUserIdAndActualReturnDateIsNotNull(Long userId);
 
     List<Rental> findByUserEmail(String email);
+
+    @Query("SELECT r FROM Rental r WHERE r.user.id = :userId AND r.actualReturnDate IS NULL")
+    List<Rental> findActiveRentalsByUser(Long userId);
+
+    @Query("SELECT r FROM Rental r WHERE r.user.id = :userId AND r.actualReturnDate IS NOT NULL")
+    List<Rental> findCompletedRentalsByUser(Long userId);
 }

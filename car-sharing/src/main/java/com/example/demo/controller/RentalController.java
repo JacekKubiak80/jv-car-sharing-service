@@ -6,13 +6,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Rental Controller", description = "Operations for managing car rentals")
 @RestController
@@ -29,8 +29,13 @@ public class RentalController {
     })
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping
-    public List<RentalResponseDto> getAllRentals() {
-        return rentalService.getAllRentals();
+    public List<RentalResponseDto> getAllRentals(@RequestParam(required = false) Long userId,
+                                                 @RequestParam(required = false) Boolean isActive) {
+        if (userId != null && isActive != null) {
+            return rentalService.getRentalsByUserAndStatus(userId, isActive);
+        } else {
+            return rentalService.getAllRentals();
+        }
     }
 
     @Operation(summary = "Get rental by ID")
@@ -40,6 +45,28 @@ public class RentalController {
     })
     @GetMapping("/{id}")
     public RentalResponseDto getRentalById(@PathVariable Long id) {
-        return rentalService.getRentalById(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return rentalService.getRentalById(id, email);
+    }
+
+    @Operation(summary = "Create a new rental and decrease car inventory")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Rental created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid rental data")
+    })
+    @PostMapping
+    public RentalResponseDto createRental(@RequestParam Long carId, @RequestParam Long userId) {
+        return rentalService.createRental(carId, userId);
+    }
+
+    @Operation(summary = "Return a rental and increase car inventory")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rental returned successfully"),
+            @ApiResponse(responseCode = "404", description = "Rental not found")
+    })
+    @PostMapping("/{id}/return")
+    public RentalResponseDto returnRental(@PathVariable Long id) {
+        return rentalService.returnRental(id);
     }
 }

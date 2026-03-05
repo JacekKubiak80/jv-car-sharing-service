@@ -1,18 +1,23 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.CarRequestDto;
+import com.example.demo.dto.CarResponseDto;
 import com.example.demo.model.Car;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.math.BigDecimal;
-import java.util.List;
 
 public interface CarService {
-    List<Car> searchCars(String brand, Car.CarType type, Integer minInventory,
-                         BigDecimal maxDailyFee);
 
-    Car getCarById(Long id);
+    Page<CarResponseDto> searchCars(String brand, Car.CarType type, Integer minInventory,
+                                    BigDecimal maxDailyFee, Pageable pageable);
 
-    Car createCar(Car car);
+    CarResponseDto getCarById(Long id);
 
-    Car updateCar(Long id, Car car);
+    CarResponseDto createCar(CarRequestDto carRequestDto);
+
+    CarResponseDto updateCar(Long id, CarRequestDto carRequestDto);
 
     void deleteCar(Long id);
 }

@@ -28,4 +28,19 @@ public class PaymentServiceImpl implements PaymentService {
                 .map(paymentMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public PaymentResponseDto createPaymentSession(Long rentalId, Long userId) {
+        return new PaymentResponseDto();
+    }
+
+    @Override
+    public PaymentResponseDto getPaymentSuccess(String sessionId) {
+        return new PaymentResponseDto();
+    }
+
+    @Override
+    public PaymentResponseDto getPaymentCancel(String sessionId) {
+        return new PaymentResponseDto();
+    }
 }
