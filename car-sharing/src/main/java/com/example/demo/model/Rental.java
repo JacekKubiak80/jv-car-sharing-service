@@ -38,6 +38,8 @@ public class Rental {
 
     private LocalDate actualReturnDate;
 
+    private LocalDate expectedReturnDate;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "car_id")
     private Car car;

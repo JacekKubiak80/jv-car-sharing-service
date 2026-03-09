@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 @Tag(name = "Car Controller", description = "Operations for managing cars")
 @RestController
@@ -76,7 +77,7 @@ public class CarController {
     @PreAuthorize("hasRole('MANAGER')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CarResponseDto createCar(@RequestBody CarRequestDto carRequestDto) {
+    public CarResponseDto createCar(@RequestBody @Valid CarRequestDto carRequestDto) {
         return carService.createCar(carRequestDto);
     }
 
@@ -89,7 +90,7 @@ public class CarController {
     @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CarResponseDto updateCar(@PathVariable Long id, @RequestBody CarRequestDto carRequestDto) {
+    public CarResponseDto updateCar(@PathVariable Long id, @RequestBody @Valid CarRequestDto carRequestDto) {
         return carService.updateCar(id, carRequestDto);
     }
 
