@@ -14,4 +14,6 @@ public interface RentalService {
     RentalResponseDto createRental(Long carId, Long userId);
 
     RentalResponseDto returnRental(Long rentalId);
+
+    List<RentalResponseDto> getRentals(Long userId, Boolean isActive);
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 public class RentalServiceImpl implements RentalService {
@@ -100,5 +101,14 @@ public class RentalServiceImpl implements RentalService {
         Rental savedRental = rentalRepository.save(rental);
         notificationService.sendRentalReturned(rentalMapper.toDto(savedRental));
         return rentalMapper.toDto(savedRental);
+    }
+
+    @Override
+    public List<RentalResponseDto> getRentals(Long userId, Boolean isActive) {
+        if (userId != null && isActive != null) {
+            return getRentalsByUserAndStatus(userId, isActive);
+        } else {
+            return getAllRentals();
+        }
     }
 }

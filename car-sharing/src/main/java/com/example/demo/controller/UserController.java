@@ -4,8 +4,6 @@ import com.example.demo.dto.UserRequestDto;
 import com.example.demo.dto.UserResponseDto;
 import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,21 +21,12 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "Get current logged-in user's profile")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User profile retrieved successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access")
-    })
     @GetMapping("/me")
     public UserResponseDto getCurrentUser(Principal principal) {
         return userService.getByEmail(principal.getName());
     }
 
     @Operation(summary = "Update current logged-in user's profile")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User profile updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid update data"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access")
-    })
     @PutMapping("/me")
     public UserResponseDto updateProfile(@Valid @RequestBody UserRequestDto updatedUserRequestDto,
                                          Principal principal) {
@@ -45,11 +34,6 @@ public class UserController {
     }
 
     @Operation(summary = "Get any user by ID (MANAGER only)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User retrieved successfully"),
-            @ApiResponse(responseCode = "403", description = "Access denied for non-manager users"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/{id}")
     public UserResponseDto getUserById(@PathVariable Long id) {
