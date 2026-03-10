@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 public class RentalServiceImpl implements RentalService {
@@ -28,6 +27,7 @@ public class RentalServiceImpl implements RentalService {
     private final CarRepository carRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private static final int DEFAULT_RENTAL_DAYS = 7;
 
     @Override
     public List<RentalResponseDto> getAllRentals() {
@@ -41,9 +41,13 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
 
-        if (!rental.getUser().getEmail().equals(email)) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!rental.getUser().getEmail().equals(email) && user.getRole() != User.Role.MANAGER) {
             throw new AccessDeniedException("You do not have permission to access this rental.");
         }
+
         return rentalMapper.toDto(rental);
     }
 
@@ -76,7 +80,7 @@ public class RentalServiceImpl implements RentalService {
         rental.setUser(user);
         rental.setRentalDate(java.time.LocalDate.now());
         rental.setActualReturnDate(null);
-        rental.setExpectedReturnDate(java.time.LocalDate.now().plusDays(7));
+        rental.setExpectedReturnDate(java.time.LocalDate.now().plusDays(DEFAULT_RENTAL_DAYS));
 
 
         car.setInventory(car.getInventory() - 1);
