@@ -13,7 +13,10 @@ import com.example.demo.repository.CarRepository;
 import com.example.demo.repository.RentalRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,14 +39,13 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public RentalResponseDto getRentalById(Long id, String email) {
+    public RentalResponseDto getRentalById(Long id) {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User currentUser = getCurrentUser();
 
-        if (!rental.getUser().getEmail().equals(email) && user.getRole() != User.Role.MANAGER) {
+        if (!rental.getUser().getId().equals(currentUser.getId()) && currentUser.getRole() != User.Role.MANAGER) {
             throw new AccessDeniedException("You do not have permission to access this rental.");
         }
 
@@ -51,24 +53,24 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public List<RentalResponseDto> getRentalsByUserAndStatus(Long userId, Boolean isActive) {
-        List<Rental> rentals;
-        if (isActive == null) {
-            rentals = rentalRepository.findByUserId(userId);
-        } else if (isActive) {
-            rentals = rentalRepository.findByUserIdAndActualReturnDateIsNull(userId);
-        } else {
-            rentals = rentalRepository.findByUserIdAndActualReturnDateIsNotNull(userId);
+    public List<RentalResponseDto> getRentals(Long userId, Boolean isActive) {
+        User currentUser = getCurrentUser();
+
+        if (currentUser.getRole() == User.Role.MANAGER && userId != null) {
+            // Manager może filtrować po konkretnym userId
+            return getRentalsByUserAndStatus(userId, isActive);
         }
-        return rentals.stream().map(rentalMapper::toDto).collect(Collectors.toList());
+
+        // Zwykły użytkownik widzi tylko swoje wypożyczenia
+        return getRentalsByUserAndStatus(currentUser.getId(), isActive);
     }
 
     @Override
-    public RentalResponseDto createRental(Long carId, Long userId) {
+    public RentalResponseDto createRental(Long carId) {
+        User currentUser = getCurrentUser();
+
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new ResourceNotFoundException("Car not found"));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (car.getInventory() <= 0) {
             throw new CarOutOfStockException("Car is not available for rental.");
@@ -76,11 +78,10 @@ public class RentalServiceImpl implements RentalService {
 
         Rental rental = new Rental();
         rental.setCar(car);
-        rental.setUser(user);
+        rental.setUser(currentUser);
         rental.setRentalDate(java.time.LocalDate.now());
         rental.setActualReturnDate(null);
         rental.setExpectedReturnDate(java.time.LocalDate.now().plusDays(DEFAULT_RENTAL_DAYS));
-
 
         car.setInventory(car.getInventory() - 1);
         carRepository.save(car);
@@ -106,12 +107,32 @@ public class RentalServiceImpl implements RentalService {
         return rentalMapper.toDto(savedRental);
     }
 
-    @Override
-    public List<RentalResponseDto> getRentals(Long userId, Boolean isActive) {
-        if (userId != null && isActive != null) {
-            return getRentalsByUserAndStatus(userId, isActive);
+    // Pomocnicza metoda pobierająca zalogowanego użytkownika
+    private User getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email;
+
+        if (principal instanceof UserDetails userDetails) {
+            email = userDetails.getUsername();
+        } else if (principal instanceof String) {
+            email = (String) principal;
         } else {
-            return getAllRentals();
+            throw new AccessDeniedException("Cannot identify logged-in user");
         }
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private List<RentalResponseDto> getRentalsByUserAndStatus(Long userId, Boolean isActive) {
+        List<Rental> rentals;
+        if (isActive == null) {
+            rentals = rentalRepository.findByUserId(userId);
+        } else if (isActive) {
+            rentals = rentalRepository.findByUserIdAndActualReturnDateIsNull(userId);
+        } else {
+            rentals = rentalRepository.findByUserIdAndActualReturnDateIsNotNull(userId);
+        }
+        return rentals.stream().map(rentalMapper::toDto).collect(Collectors.toList());
     }
 }

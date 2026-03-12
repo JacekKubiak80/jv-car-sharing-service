@@ -4,6 +4,7 @@ import com.example.demo.dto.CarRequestDto;
 import com.example.demo.dto.CarResponseDto;
 import com.example.demo.model.Car;
 import com.example.demo.service.CarService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
@@ -31,6 +32,7 @@ public class CarController {
 
     private final CarService carService;
 
+    @Operation(summary = "Get all cars with optional filters")
     @GetMapping
     public Page<CarResponseDto> getAllCars(
             @RequestParam(required = false) String brand,
@@ -39,9 +41,11 @@ public class CarController {
             @RequestParam(required = false) BigDecimal maxDailyFee,
             Pageable pageable
     ) {
-        return carService.searchCars(brand, String.valueOf(type), minInventory, maxDailyFee, pageable);
+
+        return carService.searchCars(brand, type, minInventory, maxDailyFee, pageable);
     }
 
+    @Operation(summary = "Get a car by its ID")
     @GetMapping("/{id}")
     public CarResponseDto getCarById(@PathVariable Long id) {
         return carService.getCarById(id);
@@ -54,6 +58,7 @@ public class CarController {
         return carService.createCar(request);
     }
 
+    @Operation(summary = "Update an existing car")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER')")
     public CarResponseDto updateCar(
@@ -63,6 +68,7 @@ public class CarController {
         return carService.updateCar(id, request);
     }
 
+    @Operation(summary = "Delete a car by its ID")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)

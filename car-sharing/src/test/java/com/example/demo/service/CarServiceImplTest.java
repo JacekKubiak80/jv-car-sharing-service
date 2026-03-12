@@ -142,16 +142,9 @@ class CarServiceImplTest {
         when(carRepository.findAll(any(Pageable.class))).thenReturn(page);
         when(carMapper.toDto(car)).thenReturn(responseDto);
 
-        Page<CarResponseDto> result = carService.searchCars("Toyota", "SEDAN", 1, new BigDecimal("200"), Pageable.unpaged());
+        Page<CarResponseDto> result = carService.searchCars("Toyota", Car.CarType.SEDAN, 1, new BigDecimal("200"), Pageable.unpaged());
 
         assertEquals(1, result.getContent().size());
         assertEquals(responseDto, result.getContent().get(0));
-    }
-
-    @Test
-    void testSearchCars_invalidType_throwsException() {
-        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
-                () -> carService.searchCars("Toyota", "INVALID", null, null, Pageable.unpaged()));
-        assertTrue(ex.getMessage().contains("Invalid car type"));
     }
 }

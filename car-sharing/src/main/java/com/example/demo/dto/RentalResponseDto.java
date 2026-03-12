@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,4 +21,6 @@ public class RentalResponseDto {
     private LocalDate returnDate;
     private LocalDate actualReturnDate;
     private boolean active;
+    private BigDecimal totalPrice;
+
 }

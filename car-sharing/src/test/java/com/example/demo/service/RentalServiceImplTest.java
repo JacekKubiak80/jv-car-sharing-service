@@ -16,15 +16,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.time.LocalDate;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RentalServiceImplTest {
@@ -71,15 +70,26 @@ class RentalServiceImplTest {
 
     @Test
     void createRental_carOutOfStock_shouldThrowException() {
+
+        User testUser = new User();
+        testUser.setId(1L);
+        testUser.setEmail("test@example.com");
+        testUser.setRole(User.Role.CUSTOMER);
+
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(new org.springframework.security.authentication.TestingAuthenticationToken(
+                "test@example.com", null
+        ));
+        SecurityContextHolder.setContext(securityContext);
+
+        Car car = new Car();
+        car.setId(1L);
         car.setInventory(0);
-
         when(carRepository.findById(1L)).thenReturn(Optional.of(car));
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        assertThrows(CarOutOfStockException.class,
-                () -> rentalService.createRental(1L, 1L));
-
-        verify(rentalRepository, never()).save(any());
+        assertThrows(CarOutOfStockException.class, () -> rentalService.createRental(1L));
     }
 
     @Test

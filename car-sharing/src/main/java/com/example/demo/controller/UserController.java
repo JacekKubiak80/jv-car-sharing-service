@@ -41,7 +41,7 @@ public class UserController {
     @PutMapping("/me")
     public UserResponseDto updateProfile(@Valid @RequestBody UserRequestDto updatedUserRequestDto,
                                          @AuthenticationPrincipal User user) {
-        return userService.updateProfile(user.getEmail(), updatedUserRequestDto);
+        return userService.updateProfile(user.getId(), updatedUserRequestDto);
     }
 
     @Operation(summary = "Get any user by ID (MANAGER only)")
@@ -66,11 +66,6 @@ public class UserController {
     @PatchMapping("/me")
     public UserResponseDto patchProfile(@RequestBody UserRequestDto partialUpdateDto,
                                         @AuthenticationPrincipal User user) {
-        UserResponseDto existingDto = userService.getByEmail(user.getEmail());
-
-        userMapper.updateEntityFromDto(partialUpdateDto, user);
-
-        User updatedUser = userRepository.save(user);
-        return userMapper.toDto(updatedUser);
+        return userService.patchProfile(user.getId(), partialUpdateDto);
     }
 }

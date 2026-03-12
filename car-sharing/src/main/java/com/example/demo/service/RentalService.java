@@ -7,13 +7,11 @@ public interface RentalService {
 
     List<RentalResponseDto> getAllRentals();
 
-    RentalResponseDto getRentalById(Long id, String email);
-
-    List<RentalResponseDto> getRentalsByUserAndStatus(Long userId, Boolean isActive);
-
-    RentalResponseDto createRental(Long carId, Long userId);
-
-    RentalResponseDto returnRental(Long rentalId);
+    RentalResponseDto getRentalById(Long id);
 
     List<RentalResponseDto> getRentals(Long userId, Boolean isActive);
+
+    RentalResponseDto createRental(Long carId);
+
+    RentalResponseDto returnRental(Long rentalId);
 }

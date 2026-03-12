@@ -26,19 +26,19 @@ public class CarServiceImpl implements CarService {
     @Override
     @Transactional(readOnly = true)
     public Page<CarResponseDto> searchCars(String brand,
-                                           String type,
+                                           Car.CarType type,
                                            Integer minInventory,
                                            java.math.BigDecimal maxDailyFee,
                                            Pageable pageable) {
 
-        Car.CarType carType = parseCarType(type);
+
 
         Page<Car> pageResult = carRepository.findAll(pageable);
 
         List<CarResponseDto> filtered = pageResult.stream()
                 .filter(Objects::nonNull)
                 .filter(car -> brand == null || car.getBrand().equalsIgnoreCase(brand))
-                .filter(car -> carType == null || car.getType() == carType)
+                .filter(car -> type == null || car.getType() == type)
                 .filter(car -> minInventory == null || car.getInventory() >= minInventory)
                 .filter(car ->
                         maxDailyFee == null || car.getDailyFee().compareTo(maxDailyFee) <= 0)
@@ -77,7 +77,7 @@ public class CarServiceImpl implements CarService {
 
         car.setBrand(request.getBrand());
         car.setModel(request.getModel());
-        car.setType(parseCarType(String.valueOf(request.getType())));
+        car.setType(request.getType());
         car.setInventory(request.getInventory());
         car.setDailyFee(request.getDailyFee());
 

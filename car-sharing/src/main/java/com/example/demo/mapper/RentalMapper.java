@@ -9,7 +9,8 @@ import org.mapstruct.Mapping;
 public interface RentalMapper {
 
     @Mapping(target = "active", expression = "java(rental.getActualReturnDate() == null)")
-    @Mapping(target = "car", source = "car")
+
+    @Mapping(target = "totalPrice", expression = "java(rental.getTotalPrice())")
     RentalResponseDto toDto(Rental rental);
 }
 

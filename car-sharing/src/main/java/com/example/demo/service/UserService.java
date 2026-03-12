@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.UserRequestDto;
 import com.example.demo.dto.UserResponseDto;
+import com.example.demo.model.User;
 import jakarta.validation.Valid;
 
 public interface UserService {
@@ -12,5 +13,10 @@ public interface UserService {
 
     UserResponseDto register(@Valid UserRequestDto userRequestDto);
 
-    UserResponseDto updateProfile(String email, UserRequestDto updatedUserRequestDto);
+    UserResponseDto updateProfile(Long userId, @Valid UserRequestDto updatedUserRequestDto);
+
+    UserResponseDto patchProfile(Long userId, UserRequestDto partialUpdateDto);
+
+    UserResponseDto updateUserRole(Long id, User.Role role);
 }
+
