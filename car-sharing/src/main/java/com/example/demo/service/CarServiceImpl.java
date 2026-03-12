@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,14 +40,13 @@ public class CarServiceImpl implements CarService {
                 .filter(car -> brand == null || car.getBrand().equalsIgnoreCase(brand))
                 .filter(car -> carType == null || car.getType() == carType)
                 .filter(car -> minInventory == null || car.getInventory() >= minInventory)
-                .filter(car -> maxDailyFee == null || car.getDailyFee().compareTo(maxDailyFee) <= 0)
+                .filter(car ->
+                        maxDailyFee == null || car.getDailyFee().compareTo(maxDailyFee) <= 0)
                 .map(carMapper::toDto)
                 .collect(Collectors.toList());
 
         return new PageImpl<>(filtered, pageable, pageResult.getTotalElements());
     }
-
-
 
     @Override
     @Transactional(readOnly = true)

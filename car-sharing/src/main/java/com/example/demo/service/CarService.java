@@ -1,11 +1,9 @@
 package com.example.demo.service;
 
-
 import com.example.demo.dto.CarRequestDto;
 import com.example.demo.dto.CarResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.math.BigDecimal;
 
 public interface CarService {

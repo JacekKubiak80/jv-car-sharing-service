@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.PaymentResponseDto;
-
 import java.util.List;
 
 public interface PaymentService {
@@ -15,4 +14,8 @@ public interface PaymentService {
     PaymentResponseDto getPaymentSuccess(String sessionId);
 
     PaymentResponseDto getPaymentCancel(String sessionId);
+
+    PaymentResponseDto getPaymentSuccess(Long rentalId);
+
+    PaymentResponseDto getPaymentCancel(Long rentalId);
 }

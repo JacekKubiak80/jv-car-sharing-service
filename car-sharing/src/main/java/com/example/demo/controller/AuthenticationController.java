@@ -4,6 +4,8 @@ import com.example.demo.dto.UserLoginRequestDto;
 import com.example.demo.dto.UserLoginResponseDto;
 import com.example.demo.dto.UserRequestDto;
 import com.example.demo.dto.UserResponseDto;
+import com.example.demo.model.User;
+import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +30,7 @@ public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "Register a new user")
     @PostMapping("/register")
@@ -45,8 +48,11 @@ public class AuthenticationController {
                         loginRequest.getPassword()
                 )
         );
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwtToken = "JWT_TOKEN";
+        User user = (User) authentication.getPrincipal();
+        String jwtToken = jwtTokenProvider.generateToken(user);
+
         return new UserLoginResponseDto(jwtToken);
     }
 }
