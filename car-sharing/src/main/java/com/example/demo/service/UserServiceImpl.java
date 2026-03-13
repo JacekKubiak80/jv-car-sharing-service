@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.dto.UserRequestDto;
 import com.example.demo.dto.UserResponseDto;
+import com.example.demo.exception.EmailAlreadyRegisteredException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
@@ -23,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getByEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return userMapper.toDto(user);
     }
 
@@ -36,6 +38,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto register(@Valid UserRequestDto userRequestDto) {
+        userRepository.findByEmail(userRequestDto.getEmail())
+                .ifPresent(u -> {
+                    throw new EmailAlreadyRegisteredException("Email already registered: " + userRequestDto.getEmail());
+                });
         User user = userMapper.toEntity(userRequestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(User.Role.CUSTOMER);
