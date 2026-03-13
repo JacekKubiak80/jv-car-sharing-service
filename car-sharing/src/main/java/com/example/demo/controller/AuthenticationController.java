@@ -42,17 +42,16 @@ public class AuthenticationController {
     @Operation(summary = "Login a user and return JWT token")
     @PostMapping("/login")
     public UserLoginResponseDto login(@Valid @RequestBody UserLoginRequestDto loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        User user = (User) authentication.getPrincipal();
+        UserResponseDto userDto = userService.getByEmail(loginRequest.getEmail());
+        User user = userService.getUserEntityByEmail(loginRequest.getEmail());
         String jwtToken = jwtTokenProvider.generateToken(user);
-
         return new UserLoginResponseDto(jwtToken);
     }
 }

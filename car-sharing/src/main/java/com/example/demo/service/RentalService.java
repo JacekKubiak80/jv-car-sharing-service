@@ -11,7 +11,7 @@ public interface RentalService {
 
     RentalResponseDto getRentalById(Long id);
 
-    List<RentalResponseDto> getRentals(Long userId, Boolean isActive);
+    List<RentalResponseDto> getRentals(Boolean isActive);
 
     RentalResponseDto createRental(Long carId, LocalDate returnDate);
 

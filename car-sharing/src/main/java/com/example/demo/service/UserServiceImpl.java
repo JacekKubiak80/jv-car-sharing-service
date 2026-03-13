@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponseDto register(@Valid UserRequestDto userRequestDto) {
         userRepository.findByEmail(userRequestDto.getEmail())
                 .ifPresent(u -> {
@@ -77,10 +78,17 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto updateUserRole(Long id, User.Role role) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         user.setRole(role);
         User updatedUser = userRepository.save(user);
         return userMapper.toDto(updatedUser);
+    }
+
+    @Override
+    @Transactional
+    public User getUserEntityByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

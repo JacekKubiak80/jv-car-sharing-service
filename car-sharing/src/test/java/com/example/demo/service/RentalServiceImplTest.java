@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.RentalResponseDto;
+import com.example.demo.exception.AccessDeniedException;
 import com.example.demo.exception.CarOutOfStockException;
 import com.example.demo.exception.RentalAlreadyReturnedException;
 import com.example.demo.mapper.RentalMapper;
@@ -18,11 +19,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.time.LocalDate;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,6 +60,7 @@ class RentalServiceImplTest {
         user = new User();
         user.setId(1L);
         user.setEmail("test@test.com");
+        user.setRole(User.Role.CUSTOMER);
 
         rental = new Rental();
         rental.setId(1L);
@@ -66,28 +68,22 @@ class RentalServiceImplTest {
         rental.setUser(user);
         rental.setRentalDate(LocalDate.now());
         rental.setExpectedReturnDate(LocalDate.now().plusDays(7));
+        rental.setActualReturnDate(null);
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(
+                new org.springframework.security.authentication.TestingAuthenticationToken(
+                        user.getEmail(), null
+                )
+        );
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
     void createRental_carOutOfStock_shouldThrowException() {
-
-        User testUser = new User();
-        testUser.setId(1L);
-        testUser.setEmail("test@example.com");
-        testUser.setRole(User.Role.CUSTOMER);
-
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
-
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(new org.springframework.security.authentication.TestingAuthenticationToken(
-                "test@example.com", null
-        ));
-        SecurityContextHolder.setContext(securityContext);
-
-        Car car = new Car();
-        car.setId(1L);
         car.setInventory(0);
         when(carRepository.findById(1L)).thenReturn(Optional.of(car));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         LocalDate returnDate = LocalDate.now().plusDays(3);
 
@@ -98,10 +94,26 @@ class RentalServiceImplTest {
     @Test
     void returnRental_alreadyReturned_shouldThrowException() {
         rental.setActualReturnDate(LocalDate.now());
-
         when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         assertThrows(RentalAlreadyReturnedException.class,
+                () -> rentalService.returnRental(1L));
+
+        verify(carRepository, never()).save(any());
+    }
+
+    @Test
+    void returnRental_notOwnerOrManager_shouldThrowAccessDenied() {
+        User otherUser = new User();
+        otherUser.setId(2L);
+        otherUser.setRole(User.Role.CUSTOMER);
+        rental.setUser(otherUser);
+
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        assertThrows(AccessDeniedException.class,
                 () -> rentalService.returnRental(1L));
 
         verify(carRepository, never()).save(any());
@@ -115,6 +127,7 @@ class RentalServiceImplTest {
         RentalResponseDto dto = new RentalResponseDto();
 
         when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(rentalRepository.save(any())).thenReturn(rental);
         when(rentalMapper.toDto(rental)).thenReturn(dto);
 

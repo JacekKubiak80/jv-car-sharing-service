@@ -44,22 +44,23 @@ public class RentalServiceImpl implements RentalService {
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
 
         User currentUser = getCurrentUser();
-
-        if (!rental.getUser().getId().equals(currentUser.getId()) && currentUser.getRole() != User.Role.MANAGER) {
+        if (!rental.getUser().getId().equals(currentUser.getId()) &&
+                currentUser.getRole() != User.Role.MANAGER) {
             throw new AccessDeniedException("You do not have permission to access this rental.");
         }
-
         return rentalMapper.toDto(rental);
     }
 
     @Override
-    public List<RentalResponseDto> getRentals(Long userId, Boolean isActive) {
+    public List<RentalResponseDto> getRentals(Boolean isActive) {
         User currentUser = getCurrentUser();
 
-        if (currentUser.getRole() == User.Role.MANAGER && userId != null) {
-            return getRentalsByUserAndStatus(userId, isActive);
+        if (currentUser.getRole() == User.Role.MANAGER) {
+            return rentalRepository.findAll()
+                    .stream()
+                    .map(rentalMapper::toDto)
+                    .toList();
         }
-
         return getRentalsByUserAndStatus(currentUser.getId(), isActive);
     }
 
@@ -93,10 +94,14 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
 
+        User currentUser = getCurrentUser();
+        if (!rental.getUser().getId().equals(currentUser.getId()) &&
+                currentUser.getRole() != User.Role.MANAGER) {
+            throw new AccessDeniedException("You cannot return rentals of other users.");
+        }
         if (rental.getActualReturnDate() != null) {
             throw new RentalAlreadyReturnedException("Rental has already been returned.");
         }
-
         rental.setActualReturnDate(java.time.LocalDate.now());
         rental.getCar().setInventory(rental.getCar().getInventory() + 1);
         carRepository.save(rental.getCar());

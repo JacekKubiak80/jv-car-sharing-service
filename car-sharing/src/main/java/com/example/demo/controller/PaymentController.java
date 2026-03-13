@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.PaymentResponseDto;
-import com.example.demo.model.Payment.PaymentType;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.PaymentService;
+import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
 public class PaymentController {
 
     private final PaymentService paymentService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Operation(summary = "Get all payments for a specific user (manager only)")
     @PreAuthorize("hasRole('MANAGER')")
@@ -33,16 +33,15 @@ public class PaymentController {
     }
 
     @Operation(summary = "Create a new payment session for a rental (logged-in user)")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<PaymentResponseDto> createPayment(
             @RequestParam Long rentalId,
-            @RequestParam PaymentType paymentType,
             Authentication authentication) {
 
         String email = authentication.getName();
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.getUserEntityByEmail(email);
         Long userId = user.getId();
 
         PaymentResponseDto payment = paymentService.createPaymentSession(rentalId, userId);
@@ -51,17 +50,23 @@ public class PaymentController {
 
     @Operation(summary = "Handle successful payment by session ID")
     @GetMapping("/success")
-    public ResponseEntity<PaymentResponseDto> paymentSuccess(
-            @RequestParam("session_id") String sessionId) {
-        PaymentResponseDto payment = paymentService.getPaymentSuccess(sessionId);
-        return ResponseEntity.ok(payment);
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> paymentSuccess(@RequestParam("session_id") String sessionId) {
+        paymentService.getPaymentSuccess(sessionId);
+        String frontendUrl = "https://your-frontend.com/payment-success";
+        return ResponseEntity.status(303)
+                .header("Location", frontendUrl)
+                .build();
     }
 
     @Operation(summary = "Handle cancelled payment by session ID")
     @GetMapping("/cancel")
-    public ResponseEntity<PaymentResponseDto> paymentCancel(
-            @RequestParam("session_id") String sessionId) {
-        PaymentResponseDto payment = paymentService.getPaymentCancel(sessionId);
-        return ResponseEntity.ok(payment);
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> paymentCancel(@RequestParam("session_id") String sessionId) {
+        paymentService.getPaymentCancel(sessionId);
+        String frontendUrl = "https://your-frontend.com/payment-cancel";
+        return ResponseEntity.status(303)
+                .header("Location", frontendUrl)
+                .build();
     }
 }

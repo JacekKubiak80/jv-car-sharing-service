@@ -51,6 +51,7 @@ public class CarController {
         return carService.getCarById(id);
     }
 
+    @Operation(summary = "Add a new car")
     @PostMapping
     @PreAuthorize("hasRole('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)

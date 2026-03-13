@@ -18,5 +18,9 @@ public interface UserService {
     UserResponseDto patchProfile(Long userId, UserRequestDto partialUpdateDto);
 
     UserResponseDto updateUserRole(Long id, User.Role role);
+
+    User getUserEntityByEmail(String email);
+
+
 }
 

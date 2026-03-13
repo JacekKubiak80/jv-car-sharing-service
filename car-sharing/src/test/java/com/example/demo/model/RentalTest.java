@@ -9,8 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RentalTest {
 
     @Test
-    void getTotalPrice_ShouldCalculateCorrectPrice_WhenMultipleDays() {
-
+    void getTotalPrice_ShouldCalculateCorrectPrice_WhenActualReturnDateSet() {
         Car car = Car.builder()
                 .dailyFee(BigDecimal.valueOf(100))
                 .build();
@@ -18,17 +17,31 @@ class RentalTest {
         Rental rental = Rental.builder()
                 .car(car)
                 .rentalDate(LocalDate.now())
-                .returnDate(LocalDate.now().plusDays(3))
+                .actualReturnDate(LocalDate.now().plusDays(3))
                 .build();
 
         BigDecimal price = rental.getTotalPrice();
-
         assertEquals(BigDecimal.valueOf(300), price);
     }
 
     @Test
-    void getTotalPrice_ShouldReturnOneDayPrice_WhenReturnSameDay() {
+    void getTotalPrice_ShouldCalculateCorrectPrice_WhenOnlyExpectedReturnDateSet() {
+        Car car = Car.builder()
+                .dailyFee(BigDecimal.valueOf(80))
+                .build();
 
+        Rental rental = Rental.builder()
+                .car(car)
+                .rentalDate(LocalDate.now())
+                .expectedReturnDate(LocalDate.now().plusDays(2))
+                .build();
+
+        BigDecimal price = rental.getTotalPrice();
+        assertEquals(BigDecimal.valueOf(160), price);
+    }
+
+    @Test
+    void getTotalPrice_ShouldReturnOneDayPrice_WhenNoReturnDatesSet() {
         Car car = Car.builder()
                 .dailyFee(BigDecimal.valueOf(50))
                 .build();
@@ -36,27 +49,25 @@ class RentalTest {
         Rental rental = Rental.builder()
                 .car(car)
                 .rentalDate(LocalDate.now())
-                .returnDate(LocalDate.now())
                 .build();
 
         BigDecimal price = rental.getTotalPrice();
-
         assertEquals(BigDecimal.valueOf(50), price);
     }
 
     @Test
-    void getTotalPrice_ShouldReturnOneDayPrice_WhenReturnDateIsNull() {
+    void getTotalPrice_ShouldReturnOneDayPrice_WhenRentalAndReturnOnSameDay() {
         Car car = Car.builder()
-                .dailyFee(BigDecimal.valueOf(100))
+                .dailyFee(BigDecimal.valueOf(120))
                 .build();
 
         Rental rental = Rental.builder()
                 .car(car)
                 .rentalDate(LocalDate.now())
-                .returnDate(null)
+                .actualReturnDate(LocalDate.now())
                 .build();
 
         BigDecimal price = rental.getTotalPrice();
-        assertEquals(BigDecimal.valueOf(100), price);
+        assertEquals(BigDecimal.valueOf(120), price);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import com.example.demo.model.Car;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,5 +32,6 @@ public class CarRequestDto {
     private int inventory;
 
     @NotNull(message = "Daily fee cannot be null")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Daily fee must be greater than 0")
     private BigDecimal dailyFee;
 }
