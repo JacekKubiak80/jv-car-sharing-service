@@ -8,6 +8,7 @@ import com.example.demo.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -28,6 +29,9 @@ class UserServiceImplTest {
 
     @InjectMocks
     private UserServiceImpl userService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Test
     void getByEmail_ShouldReturnUserDto_WhenUserExists() {
@@ -54,10 +58,13 @@ class UserServiceImplTest {
                 .build();
 
         User user = new User();
+        user.setPassword(request.getPassword()); // <--- kluczowa zmiana
+
         User savedUser = User.builder().id(1L).email("test@test.com").build();
         UserResponseDto response = UserResponseDto.builder().id(1L).build();
 
         when(userMapper.toEntity(request)).thenReturn(user);
+        when(passwordEncoder.encode(any())).thenReturn("hashedPassword"); // <--- any zamiast anyString
         when(userRepository.save(user)).thenReturn(savedUser);
         when(userMapper.toDto(savedUser)).thenReturn(response);
 

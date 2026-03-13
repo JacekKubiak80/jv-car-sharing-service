@@ -89,7 +89,10 @@ class RentalServiceImplTest {
         car.setInventory(0);
         when(carRepository.findById(1L)).thenReturn(Optional.of(car));
 
-        assertThrows(CarOutOfStockException.class, () -> rentalService.createRental(1L));
+        LocalDate returnDate = LocalDate.now().plusDays(3);
+
+        assertThrows(CarOutOfStockException.class, () ->
+                rentalService.createRental(1L, returnDate));
     }
 
     @Test

@@ -43,4 +43,20 @@ class RentalTest {
 
         assertEquals(BigDecimal.valueOf(50), price);
     }
+
+    @Test
+    void getTotalPrice_ShouldReturnOneDayPrice_WhenReturnDateIsNull() {
+        Car car = Car.builder()
+                .dailyFee(BigDecimal.valueOf(100))
+                .build();
+
+        Rental rental = Rental.builder()
+                .car(car)
+                .rentalDate(LocalDate.now())
+                .returnDate(null)
+                .build();
+
+        BigDecimal price = rental.getTotalPrice();
+        assertEquals(BigDecimal.valueOf(100), price);
+    }
 }

@@ -7,6 +7,7 @@ import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final NotificationService notificationService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDto getByEmail(String email) {
@@ -35,7 +37,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto register(@Valid UserRequestDto userRequestDto) {
         User user = userMapper.toEntity(userRequestDto);
-        user.setRole(User.Role.CUSTOMER); // nowy użytkownik zawsze CUSTOMER
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(User.Role.CUSTOMER);
         User savedUser = userRepository.save(user);
         notificationService.sendUserRegistered(savedUser);
         return userMapper.toDto(savedUser);

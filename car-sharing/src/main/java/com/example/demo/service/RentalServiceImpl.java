@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,16 +57,14 @@ public class RentalServiceImpl implements RentalService {
         User currentUser = getCurrentUser();
 
         if (currentUser.getRole() == User.Role.MANAGER && userId != null) {
-            // Manager może filtrować po konkretnym userId
             return getRentalsByUserAndStatus(userId, isActive);
         }
 
-        // Zwykły użytkownik widzi tylko swoje wypożyczenia
         return getRentalsByUserAndStatus(currentUser.getId(), isActive);
     }
 
     @Override
-    public RentalResponseDto createRental(Long carId) {
+    public RentalResponseDto createRental(Long carId, LocalDate returnDate) {
         User currentUser = getCurrentUser();
 
         Car car = carRepository.findById(carId)
@@ -107,7 +105,6 @@ public class RentalServiceImpl implements RentalService {
         return rentalMapper.toDto(savedRental);
     }
 
-    // Pomocnicza metoda pobierająca zalogowanego użytkownika
     private User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String email;

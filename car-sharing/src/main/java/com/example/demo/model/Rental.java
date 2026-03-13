@@ -49,7 +49,8 @@ public class Rental {
     private User user;
 
     public BigDecimal getTotalPrice() {
-        long days = ChronoUnit.DAYS.between(rentalDate, returnDate);
+        LocalDate actualReturn = returnDate != null ? returnDate : rentalDate.plusDays(1);
+        long days = ChronoUnit.DAYS.between(rentalDate, actualReturn);
         if (days <= 0) {
             days = 1;
         }

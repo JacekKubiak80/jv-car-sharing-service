@@ -101,12 +101,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponseDto getPaymentSuccess(String sessionId) {
-        Optional<Payment> paymentOpt = paymentRepository.findAll().stream()
-                .filter(p -> sessionId.equals(p.getSessionId()))
-                .findFirst();
-
-        Payment payment = paymentOpt.orElseThrow(() ->
-                new ResourceNotFoundException("Payment not found with sessionId: " + sessionId));
+        Payment payment = paymentRepository.findBySessionId(sessionId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Payment not found with sessionId: " + sessionId));
 
         payment.setStatus(PaymentStatus.PAID);
         paymentRepository.save(payment);
@@ -116,12 +113,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponseDto getPaymentCancel(String sessionId) {
-        Optional<Payment> paymentOpt = paymentRepository.findAll().stream()
-                .filter(p -> sessionId.equals(p.getSessionId()))
-                .findFirst();
-
-        Payment payment = paymentOpt.orElseThrow(() ->
-                new ResourceNotFoundException("Payment not found with sessionId: " + sessionId));
+        Payment payment = paymentRepository.findBySessionId(sessionId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Payment not found with sessionId: " + sessionId));
 
         return paymentMapper.toDto(payment);
     }
