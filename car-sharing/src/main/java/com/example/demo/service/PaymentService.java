@@ -14,8 +14,4 @@ public interface PaymentService {
     PaymentResponseDto getPaymentSuccess(String sessionId);
 
     PaymentResponseDto getPaymentCancel(String sessionId);
-
-    PaymentResponseDto getPaymentSuccess(Long rentalId);
-
-    PaymentResponseDto getPaymentCancel(Long rentalId);
 }

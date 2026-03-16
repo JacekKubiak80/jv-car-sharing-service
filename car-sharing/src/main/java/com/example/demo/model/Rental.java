@@ -33,9 +33,6 @@ public class Rental {
     @Column(nullable = false)
     private LocalDate rentalDate;
 
-    @Column(nullable = false)
-    private LocalDate returnDate;
-
     private LocalDate actualReturnDate;
 
     private LocalDate expectedReturnDate;

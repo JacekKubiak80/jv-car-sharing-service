@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.RentalResponseDto;
 import com.example.demo.dto.UserRequestDto;
 import com.example.demo.dto.UserResponseDto;
 import com.example.demo.exception.EmailAlreadyRegisteredException;
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return userMapper.toDto(user);
     }
 
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto updateProfile(Long userId, @Valid UserRequestDto updatedUserRequestDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         userMapper.updateEntityFromDto(updatedUserRequestDto, user);
         User updatedUser = userRepository.save(user);
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto patchProfile(Long userId, UserRequestDto partialUpdateDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         userMapper.updateEntityFromDto(partialUpdateDto, user);
         User updatedUser = userRepository.save(user);

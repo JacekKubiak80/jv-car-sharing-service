@@ -29,14 +29,8 @@ public class RentalServiceImpl implements RentalService {
     private final CarRepository carRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
-    private static final int DEFAULT_RENTAL_DAYS = 7;
 
-    @Override
-    public List<RentalResponseDto> getAllRentals() {
-        return rentalRepository.findAll().stream()
-                .map(rentalMapper::toDto)
-                .collect(Collectors.toList());
-    }
+
 
     @Override
     public RentalResponseDto getRentalById(Long id) {
@@ -67,7 +61,6 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public RentalResponseDto createRental(Long carId, LocalDate returnDate) {
         User currentUser = getCurrentUser();
-
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new ResourceNotFoundException("Car not found"));
 
@@ -80,12 +73,13 @@ public class RentalServiceImpl implements RentalService {
         rental.setUser(currentUser);
         rental.setRentalDate(java.time.LocalDate.now());
         rental.setActualReturnDate(null);
-        rental.setExpectedReturnDate(java.time.LocalDate.now().plusDays(DEFAULT_RENTAL_DAYS));
+        rental.setExpectedReturnDate(returnDate);
 
         car.setInventory(car.getInventory() - 1);
         carRepository.save(car);
 
         Rental savedRental = rentalRepository.save(rental);
+        notificationService.sendRentalCreated(rentalMapper.toDto(savedRental));
         return rentalMapper.toDto(savedRental);
     }
 

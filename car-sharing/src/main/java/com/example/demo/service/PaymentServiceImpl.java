@@ -119,33 +119,4 @@ public class PaymentServiceImpl implements PaymentService {
 
         return paymentMapper.toDto(payment);
     }
-
-    @Override
-    public PaymentResponseDto getPaymentSuccess(Long rentalId) {
-        Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new ResourceNotFoundException("Rental not found with id: "
-                        + rentalId));
-
-        Payment payment = paymentRepository.findByRental(rental)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Payment not found for this rental"));
-
-        payment.setStatus(PaymentStatus.PAID);
-        paymentRepository.save(payment);
-
-        return paymentMapper.toDto(payment);
-    }
-
-    @Override
-    public PaymentResponseDto getPaymentCancel(Long rentalId) {
-        Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Rental not found with id: " + rentalId));
-
-        Payment payment = paymentRepository.findByRental(rental)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Payment not found for this rental"));
-
-        return paymentMapper.toDto(payment);
-    }
 }

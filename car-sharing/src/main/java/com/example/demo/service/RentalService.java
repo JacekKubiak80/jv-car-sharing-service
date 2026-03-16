@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RentalService {
 
-    List<RentalResponseDto> getAllRentals();
+
 
     RentalResponseDto getRentalById(Long id);
 
