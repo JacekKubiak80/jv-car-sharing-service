@@ -18,7 +18,7 @@ public class RentalResponseDto {
     private Long id;
     private CarResponseDto car;
     private LocalDate rentalDate;
-    private LocalDate returnDate;
+    private LocalDate expectedReturnDate;
     private LocalDate actualReturnDate;
     private boolean active;
     private BigDecimal totalPrice;

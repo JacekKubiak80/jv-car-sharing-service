@@ -41,7 +41,7 @@ public class TelegramNotificationService implements NotificationService {
         String msg = String.format("Rental created!\nRental ID: %d\nCar: %s\nReturn date: %s",
                 rentalDto.getId(),
                 carInfo,
-                rentalDto.getReturnDate());
+                rentalDto.getExpectedReturnDate());
         sendMessage(msg);
     }
 

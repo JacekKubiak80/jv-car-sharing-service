@@ -2,6 +2,7 @@ package com.carsharing.app.service;
 
 import com.carsharing.app.dto.PaymentResponseDto;
 import com.carsharing.app.exception.AccessDeniedException;
+import com.carsharing.app.exception.PaymentCreationException;
 import com.carsharing.app.exception.ResourceNotFoundException;
 import com.carsharing.app.mapper.PaymentMapper;
 import com.carsharing.app.model.Payment;
@@ -65,8 +66,8 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             SessionCreateParams params = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl("http://localhost:8080/payments/success/{CHECKOUT_SESSION_ID}")
-                    .setCancelUrl("http://localhost:8080/payments/cancel/{CHECKOUT_SESSION_ID}")
+                    .setSuccessUrl("http://localhost:8080/payments/success?session_id={CHECKOUT_SESSION_ID}")
+                    .setCancelUrl("http://localhost:8080/payments/cancel?session_id={CHECKOUT_SESSION_ID}")
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
                                     .setQuantity(1L)
@@ -100,7 +101,7 @@ public class PaymentServiceImpl implements PaymentService {
             return paymentMapper.toDto(payment);
 
         } catch (Exception e) {
-            throw new RuntimeException("Stripe session creation failed", e);
+            throw new PaymentCreationException("Stripe session creation failed", e);
         }
     }
 
